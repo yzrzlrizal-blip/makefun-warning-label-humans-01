@@ -25,9 +25,12 @@ def gate(text: str) -> None:
         raise SystemExit("entry must be a single line")
 
 
-def main() -> int:
+def main(argv=None) -> int:
     gate(ENTRY)
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+    args = list(sys.argv[1:] if argv is None else argv)
+    if len(args) > 1:
+        raise SystemExit("usage: main.py [output-dir]")
+    out_dir = args[0] if args else os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as f:
@@ -37,6 +40,7 @@ def main() -> int:
     gate(written)
     if written != ENTRY:
         raise SystemExit("written entry differs from the validated line")
+    print(f"gate OK: {len(written)} characters, single line")
     print(f"wrote {len(written)} characters to {path}")
     return 0
 
